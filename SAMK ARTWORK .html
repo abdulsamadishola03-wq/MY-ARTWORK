@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samk - Portrait Artist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Work+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --charcoal: #1a1a1a;
+            --graphite: #2d2d2d;
+            --paper: #f8f6f0;
+            --cream: #e8e4d8;
+            --accent: #c4a962;
+            --shadow: rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: var(--paper);
+            color: var(--charcoal);
+            overflow-x: hidden;
+        }
+
+        /* Texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.01) 2px,
+                    rgba(0, 0, 0, 0.01) 4px
+                );
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--cream) 0%, var(--paper) 100%);
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 2;
+            animation: fadeInUp 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+            transform: scaleX(0);
+            animation: expandLine 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--graphite);
+            margin-top: 2rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.875rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--graphite);
+            opacity: 0;
+            animation: fadeIn 1s ease 1.5s forwards, bounce 2s ease 2.5s infinite;
+        }
+
+        .scroll-indicator::after {
+            content: '↓';
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        /* Gallery Section */
+        .gallery {
+            padding: 8rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .gallery-header {
+            text-align: center;
+            margin-bottom: 5rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s ease forwards;
+            animation-timeline: view();
+            animation-range: entry 0% cover 30%;
+        }
+
+        .gallery-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            color: var(--charcoal);
+            margin-bottom: 1rem;
+        }
+
+        .gallery-subtitle {
+            font-size: 1.125rem;
+            font-weight: 300;
+            color: var(--graphite);
+            letter-spacing: 0.05em;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 3rem;
+        }
+
+        .artwork-card {
+            background: white;
+            padding: 2rem;
+            box-shadow: 0 10px 40px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: fadeInUp 0.8s ease forwards;
+            animation-timeline: view();
+            animation-range: entry 0% cover 25%;
+        }
+
+        .artwork-card:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .artwork-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .artwork-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .artwork-card:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .artwork-card:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        .artwork-card:nth-child(6) {
+            animation-delay: 0.5s;
+        }
+
+        .artwork-card:nth-child(7) {
+            animation-delay: 0.6s;
+        }
+
+        .artwork-card:nth-child(4) {
+            animation-delay: 0.3s;
+        }
+
+        .artwork-card:nth-child(5) {
+            animation-delay: 0.4s;
+        }
+
+        .artwork-card:nth-child(6) {
+            animation-delay: 0.5s;
+        }
+
+        .artwork-card:nth-child(7) {
+            animation-delay: 0.6s;
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+        .artwork-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent), var(--charcoal));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
+        }
+
+        .artwork-card:hover::before {
+            opacity: 0.3;
+        }
+
+        .artwork-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--cream);
+        }
+
+        .artwork-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--cream);
+        }
+
+        .artwork-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .artwork-medium {
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--graphite);
+            font-weight: 500;
+        }
+
+        /* Artist Statement Section */
+        .statement {
+            background: linear-gradient(135deg, var(--paper) 0%, var(--cream) 100%);
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .statement::before {
+            content: '"';
+            position: absolute;
+            top: 4rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Playfair Display', serif;
+            font-size: 15rem;
+            color: var(--accent);
+            opacity: 0.1;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .statement-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .statement-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: var(--charcoal);
+        }
+
+        .statement-text {
+            font-size: 1.125rem;
+            line-height: 2;
+            color: var(--graphite);
+            font-weight: 300;
+        }
+
+        .statement-text p {
+            margin-bottom: 2rem;
+            text-align: justify;
+            text-indent: 2em;
+        }
+
+        .statement-text p:first-of-type::first-letter {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            font-weight: 700;
+            float: left;
+            line-height: 0.8;
+            margin-right: 0.1em;
+            color: var(--accent);
+        }
+
+        .statement-signature {
+            text-align: right;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            margin-top: 3rem;
+            color: var(--charcoal);
+            text-indent: 0 !important;
+        }
+
+        /* About Section */
+        .about {
+            background: var(--charcoal);
+            color: var(--paper);
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .about-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .about-image-container {
+            position: relative;
+        }
+
+        .about-image {
+            width: 100%;
+            height: auto;
+            border: 4px solid var(--accent);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .about-text-content {
+            text-align: left;
+        }
+
+        .about-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--accent);
+        }
+
+        .about-text {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            font-weight: 300;
+            margin-bottom: 3rem;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            padding: 1.25rem 3rem;
+            background: var(--accent);
+            color: var(--charcoal);
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent);
+        }
+
+        .contact-btn:hover {
+            background: transparent;
+            color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 2rem;
+            text-align: center;
+            background: var(--paper);
+            border-top: 1px solid var(--cream);
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--graphite);
+            letter-spacing: 0.1em;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes expandLine {
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translate(-50%, 0);
+            }
+            50% {
+                transform: translate(-50%, 10px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .gallery,
+            .statement,
+            .about {
+                padding: 4rem 1.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .about-image-container {
+                max-width: 250px;
+                margin: 0 auto;
+            }
+
+            .about-text-content {
+                text-align: center;
+            }
+
+            .statement::before {
+                font-size: 8rem;
+                top: 2rem;
+            }
+
+            .statement-text p {
+                text-align: left;
+                text-indent: 1em;
+            }
+        }
+
+        /* Fallback for browsers without animation-timeline */
+        @supports not (animation-timeline: view()) {
+            .gallery-header,
+            .artwork-card {
+                opacity: 1;
+                transform: translateY(0);
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="logo">Samk</h1>
+            <p class="tagline">Portrait Artist</p>
+        </div>
+        <div class="scroll-indicator">Explore</div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section class="gallery">
+        <div class="gallery-header">
+            <h2 class="gallery-title">Selected Works</h2>
+            <p class="gallery-subtitle">Pencil & Ballpoint Pen on Paper</p>
+        </div>
+
+        <div class="gallery-grid">
+            <div class="artwork-card">
+                <img src="artwork1.jpg" alt="Portrait Study 01" class="artwork-image">
+                <div class="artwork-info">
+                    <span class="artwork-number">01</span>
+                    <span class="artwork-medium">Pencil Work</span>
+                </div>
+            </div>
+
+            <div class="artwork-card">
+                <img src="artwork2.jpg" alt="Portrait Study 02" class="artwork-image">
+                <div class="artwork-info">
+                    <span class="artwork-number">02</span>
+                    <span class="artwork-medium">Pencil Work</span>
+                </div>
+            </div>
+
+            <div class="artwork-card">
+                <img src="artwork3.jpg" alt="Portrait Study 03" class="artwork-image">
+                <div class="artwork-info">
+                    <span class="artwork-number">03</span>
+                    <span class="artwork-medium">Pencil Work</span>
+                </div>
+            </div>
+
+            <div class="artwork-card">
+                <img src="artwork4.jpg" alt="Portrait Study 04" class="artwork-image">
+                <div class="artwork-info">
+                    <span class="artwork-number">04</span>
+                    <span class="artwork-medium">Ballpoint Pen</span>
+                </div>
+            </div>
+
+            <div class="artwork-card">
+                <img src="artwork5.jpg" alt="Portrait Study 05" class="artwork-image">
+                <div class="artwork-info">
+                    <span class="artwork-number">05</span>
+                    <span class="artwork-medium">Ballpoint Pen</span>
+                </div>
+            </div>
+
+            <div class="artwork-card">
+                <img src="artwork6.jpg" alt="Portrait Study 06" class="artwork-image">
+                <div class="artwork-info">
+                    <span class="artwork-number">06</span>
+                    <span class="artwork-medium">Ballpoint Pen</span>
+                </div>
+            </div>
+
+            <div class="artwork-card">
+                <img src="artwork7.jpg" alt="Portrait Study 07" class="artwork-image">
+                <div class="artwork-info">
+                    <span class="artwork-number">07</span>
+                    <span class="artwork-medium">Ballpoint Pen</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Artist Statement Section -->
+    <section class="statement">
+        <div class="statement-content">
+            <h2 class="statement-title">Artist Statement</h2>
+            <div class="statement-text">
+                <p>
+                    My work explores the human face as a landscape of emotion, memory, and identity. Through the 
+                    humble tools of pencil and ballpoint pen, I seek to capture not just likeness, but the intangible 
+                    essence that makes each subject uniquely themselves.
+                </p>
+                <p>
+                    I am drawn to portraiture because it demands both technical precision and emotional sensitivity. 
+                    Every line, every shadow, every subtle gradation of tone is a conversation between artist and 
+                    subject—a dialogue that transcends the physical to touch something deeper.
+                </p>
+                <p>
+                    Working primarily in monochrome allows me to focus on what truly matters: the architecture of 
+                    the face, the play of light and shadow, the quiet revelations found in a glance or smile. Each 
+                    portrait is an act of observation, patience, and ultimately, reverence for the human form.
+                </p>
+                <p class="statement-signature">— Samk</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about">
+        <div class="about-content">
+            <div class="about-image-container">
+                <img src="artist-photo.jpg" alt="Samk - Portrait Artist" class="about-image">
+            </div>
+            <div class="about-text-content">
+                <h2 class="about-title">About the Artist</h2>
+                <p class="about-text">
+                    Samk specializes in realistic portraits using pencil and ballpoint pen, capturing the essence and emotion 
+                    of subjects through meticulous detail and masterful use of line and shadow. 
+                    Each piece is a study in patience, precision, and the timeless art of drawing.
+                </p>
+                <a href="mailto:contact@samk.art" class="contact-btn">Get in Touch</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p class="footer-text">© 2026 Samk Portfolio · All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for explore button
+        document.querySelector('.scroll-indicator').addEventListener('click', () => {
+            document.querySelector('.gallery').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        });
+
+        // Add intersection observer for scroll animations (fallback)
+        if (!CSS.supports('animation-timeline: view()')) {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.artwork-card, .gallery-header').forEach(el => {
+                observer.observe(el);
+            });
+        }
+    </script>
+</body>
+</html>
